@@ -1,0 +1,25 @@
+# Credenciales (SÚPER IMPORTANTE)
+.env
+
+# Dependencias
+node_modules/
+jspm_packages/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Caché y temporales
+.cache/
+.DS_Store
+dist/
+build/
+.next/
+
+# Archivos de Python (por si acaso quedaron rastros)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+ENV/
