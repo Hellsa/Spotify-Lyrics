@@ -54,15 +54,14 @@ function getRainbowText(text) {
 
 function printHeader() {
     console.log(chalk.gray("  --------------------------------------------------"));
-    console.log(`  ${chalk.red("»")} ${chalk.white("Developer")} : ${chalk.red("Hellsa")}`);
-    console.log(`  ${chalk.red("»")} ${chalk.white("GitHub")}    : ${chalk.red("github.com/Hellsa")}`);
-    console.log(`  ${chalk.red("»")} ${chalk.white("Version")}   : ${chalk.red("1.0.0")}`);
+    console.log(`  ${chalk.cyan("»")} ${chalk.white("Developer")} : ${chalk.cyan("Hellsa")}`);
+    console.log(`  ${chalk.cyan("»")} ${chalk.white("GitHub")}    : ${chalk.cyan("github.com/Hellsa")}`);
+    console.log(`  ${chalk.cyan("»")} ${chalk.white("Version")}   : ${chalk.cyan("1.0.0")}`);
     console.log(chalk.gray("  --------------------------------------------------"));
 }
 
 function drawUI(data) {
     console.clear();
-    printHeader();
     console.log(chalk.bold.cyan(`\n  --- 🎵 DISCORD STATUS MODE ---\n`));
     console.log(`  Song: ${chalk.green(data.song || '---')}`);
     console.log(`  Author: ${chalk.green(data.author || '---')}`);
@@ -85,7 +84,6 @@ function splitText(text, maxLen = 25) {
 
 function drawLargeLyrics(data) {
     console.clear();
-    printHeader();
     const colorObj = colors[selectedColor] || colors['1'];
     console.log(colorObj.func(`\n  --- 🌈 TERMINAL MODE: ${colorObj.name.toUpperCase()} ---\n`));
     console.log(`  ${chalk.bold(data.song)} - ${data.author} (${data.progress})\n`);
@@ -196,7 +194,7 @@ async function mainLoop() {
 
 function showMenu() {
     console.clear();
-    console.log(chalk.bold.red(figlet.textSync('Spotify Lyrics', { font: 'Small' })));
+    console.log(chalk.bold.blue(figlet.textSync('Spotify Lyrics', { font: 'Small' })));
     printHeader();
     console.log(chalk.yellow("\n  Selecciona una opción:"));
     console.log(chalk.cyan("  [01]") + " Discord Lyrics Status");
