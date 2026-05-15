@@ -14,8 +14,9 @@ const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:8888/callback';
 
-const MIN_UPDATE_INTERVAL = 2000;
-const JITTER_MAX = 1500;
+const MIN_UPDATE_INTERVAL = 2500; // Aumentado ligeramente para mayor seguridad
+const JITTER_MAX = 1200; // Aumentado para que el ritmo de actualización sea más humano
+const FAST_MUSIC_THRESHOLD = 3000; // ms entre versos para considerar música "rápida"
 // ---------------------
 
 const spotifyApi = new SpotifyWebApi({
@@ -62,12 +63,11 @@ function printHeader() {
 
 function drawUI(data) {
     console.clear();
-    console.log(chalk.bold.cyan(`\n  --- 🎵 DISCORD STATUS MODE ---\n`));
-    console.log(`  Song: ${chalk.green(data.song || '---')}`);
-    console.log(`  Author: ${chalk.green(data.author || '---')}`);
-    console.log(`  Progress: ${chalk.yellow(data.progress || '0:00')}`);
-    console.log(`  Lyrics: ${chalk.white(data.lyrics || '---')}`);
-    console.log(`\n  ${chalk.dim(`[🛡️ Cooldown: ${MIN_UPDATE_INTERVAL/1000}s]`)}`);
+    console.log(`\n  Song: ${data.song || '---'}`);
+    console.log(`  Author: ${data.author || '---'}`);
+    console.log(`  Progress: ${data.progress || '0:00'}`);
+    console.log(`  Lyrics: ${data.lyrics || '---'}`);
+    console.log(`  Cooldown: ${MIN_UPDATE_INTERVAL/1000}s`);
 }
 
 function splitText(text, maxLen = 25) {
@@ -85,8 +85,7 @@ function splitText(text, maxLen = 25) {
 function drawLargeLyrics(data) {
     console.clear();
     const colorObj = colors[selectedColor] || colors['1'];
-    console.log(colorObj.func(`\n  --- 🌈 TERMINAL MODE: ${colorObj.name.toUpperCase()} ---\n`));
-    console.log(`  ${chalk.bold(data.song)} - ${data.author} (${data.progress})\n`);
+    console.log(`\n  ${chalk.bold(data.song)} - ${data.author} (${data.progress})\n`);
     
     if (data.lyrics) {
         const processedText = splitText(data.lyrics, 25);
@@ -166,11 +165,29 @@ async function mainLoop() {
             }
             let targetLine = "";
             if (currentLyrics.length > 0) {
-                for (const line of currentLyrics) {
-                    if (progress >= line.time) targetLine = line.text;
+                // Encontrar el índice actual
+                let currentIndex = 0;
+                for (let i = 0; i < currentLyrics.length; i++) {
+                    if (progress >= currentLyrics[i].time) currentIndex = i;
                     else break;
                 }
+
+                // Calcular "velocidad" basada en la duración del verso actual
+                const nextLine = currentLyrics[currentIndex + 1];
+                const duration = nextLine ? (nextLine.time - currentLyrics[currentIndex].time) : 5000;
+
+                // Offset proporcional: buscamos que la letra aparezca con un adelanto
+                // que dependa de la duración del verso, pero con límites de seguridad.
+                // Mínimo 1.2s (para evitar cambios bruscos) y máximo 2.5s (para música muy lenta).
+                const offset = Math.max(1200, Math.min(2500, duration * 0.5));
+
+                for (const line of currentLyrics) {
+                    if (progress + offset >= line.time) {
+                        targetLine = line.text;
+                    } else break;
+                }
             }
+
             if (targetLine !== lastSentText && targetLine !== "" && selectedMode === '1') {
                 const success = await updateDiscord(targetLine);
                 if (success) lastSentText = targetLine;
@@ -189,7 +206,7 @@ async function mainLoop() {
             else drawLargeLyrics({ song: "Paused", author: "---", progress: "0:00" });
         }
     } catch (e) {}
-    setTimeout(mainLoop, 1000);
+    setTimeout(mainLoop, 500);
 }
 
 function showMenu() {
