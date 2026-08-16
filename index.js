@@ -55,8 +55,8 @@ function getRainbowText(text) {
 
 function printHeader() {
     console.log(chalk.gray("  --------------------------------------------------"));
-    console.log(`  ${chalk.cyan("»")} ${chalk.white("Developer")} : ${chalk.cyan("Hellsa")}`);
-    console.log(`  ${chalk.cyan("»")} ${chalk.white("GitHub")}    : ${chalk.cyan("github.com/Hellsa")}`);
+    console.log(`  ${chalk.cyan("»")} ${chalk.white("Developer")} : ${chalk.cyan("Hqrin")}`);
+    console.log(`  ${chalk.cyan("»")} ${chalk.white("GitHub")}    : ${chalk.cyan("github.com/hqrin")}`);
     console.log(`  ${chalk.cyan("»")} ${chalk.white("Version")}   : ${chalk.cyan("1.0.0")}`);
     console.log(chalk.gray("  --------------------------------------------------"));
 }
